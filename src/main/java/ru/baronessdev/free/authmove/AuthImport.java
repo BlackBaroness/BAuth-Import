@@ -78,7 +78,7 @@ public final class AuthImport extends JavaPlugin {
                 dataManager.saveProfile(new PlayerProfile(
                         nick,
                         nick.toLowerCase(),
-                        (password.contains("$")) ? password : "$MD5$" + password + "$",
+                        (password.contains("$")) ? password : "$MD5$$" + password + "$",
                         ip,
                         ip,
                         Long.parseLong(resultSet.getString("registrationDate")),
