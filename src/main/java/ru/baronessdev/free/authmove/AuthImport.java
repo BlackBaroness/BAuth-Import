@@ -1,0 +1,103 @@
+package ru.baronessdev.free.authmove;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
+import ru.baronessdev.paid.auth.api.AuthDataManagerAPI;
+import ru.baronessdev.paid.auth.api.BaronessAuthAPI;
+import ru.baronessdev.paid.auth.commands.AdminCommand;
+import ru.baronessdev.paid.auth.pojo.PlayerProfile;
+
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.UUID;
+
+public final class AuthImport extends JavaPlugin {
+
+    @Override
+    public void onEnable() {
+        saveDefaultConfig();
+        BaronessAuthAPI.getSubcommandManager().addSubcommand(new AdminCommand.AuthSubcommand("move", "[mysql/sqlite] - переезд на новую версию", ((sender, args) -> {
+            DatabaseType type;
+            try {
+                type = DatabaseType.valueOf(args[0].toLowerCase());
+            } catch (Exception e) {
+                return false;
+            }
+            reloadConfig();
+
+            switch (type) {
+                case SQLITE: {
+                    processSQLite(sender);
+                    return true;
+                }
+                case MYSQL: {
+                    processMySQL(sender);
+                    return true;
+                }
+            }
+            return true;
+        })));
+    }
+
+    private void processSQLite(CommandSender s) {
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite://" + getDataFolder().getAbsolutePath() + File.separator + "sqlite.db");
+            importData(s, connection);
+        } catch (SQLException e) {
+            s.sendMessage("Не удалось подключиться к SQLite: " + e.getMessage());
+        }
+    }
+
+    private void processMySQL(CommandSender s) {
+        try {
+            Connection connection = DriverManager.getConnection(
+                    getConfig().getString("url"),
+                    getConfig().getString("user"),
+                    getConfig().getString("password"));
+            importData(s, connection);
+        } catch (SQLException e) {
+            s.sendMessage("Не удалось подключиться к MySQL: " + e.getMessage());
+        }
+    }
+
+    private void importData(CommandSender s, Connection connection) {
+        try {
+            ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM " + getConfig().getString("table"));
+
+            AuthDataManagerAPI dataManager = BaronessAuthAPI.getDataManager();
+            int i = 0;
+            while (resultSet.next()) {
+                String nick = resultSet.getString("nickname");
+                String ip = resultSet.getString("registrationIP");
+
+                dataManager.saveProfile(new PlayerProfile(
+                        nick,
+                        nick.toLowerCase(),
+                        resultSet.getString("password"),
+                        ip,
+                        ip,
+                        Long.parseLong(resultSet.getString("registrationDate")),
+                        Long.parseLong(resultSet.getString("lastLoginDate")),
+                        UUID.fromString(resultSet.getString("uuid")),
+                        false
+                ));
+
+                i++;
+                s.sendMessage("Импортирован: " + ChatColor.GOLD + nick + ChatColor.WHITE + ". Всего: " + ChatColor.GOLD + i);
+            }
+            s.sendMessage(ChatColor.GREEN + "Импортирование завершено. Всего: " + i);
+            connection.close();
+        } catch (Exception e) {
+            s.sendMessage(ChatColor.YELLOW + "Произошла ошибка при импортировании: " + e.getMessage());
+        }
+    }
+
+    enum DatabaseType {
+        MYSQL,
+        SQLITE
+    }
+}

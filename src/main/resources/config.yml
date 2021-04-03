@@ -1,0 +1,4 @@
+url: 'jdbc:mysql://localhost/db?serverTimezone=Europe/Moscow&useSSL=false'
+table: 'baronessauth'
+user: 'root'
+password: 'password'

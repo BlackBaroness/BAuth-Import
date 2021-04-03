@@ -1,0 +1,7 @@
+name: AuthImport
+version: ${project.version}
+main: ru.baronessdev.free.authmove.AuthImport
+depend: [ BaronessAuth ]
+authors: [ Black_Baroness ]
+description: Небольшой плагин, который позволяет перенестись на более новую версию BaronessAuth. Текущие версии переноса есть на гитхабе
+website: baronessdev.ru
