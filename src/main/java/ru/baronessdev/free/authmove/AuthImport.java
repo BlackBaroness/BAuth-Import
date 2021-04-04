@@ -23,8 +23,9 @@ public final class AuthImport extends JavaPlugin {
         BaronessAuthAPI.getSubcommandManager().addSubcommand(new AdminCommand.AuthSubcommand("move", "[mysql/sqlite] - переезд на новую версию", ((sender, args) -> {
             DatabaseType type;
             try {
-                type = DatabaseType.valueOf(args[0].toLowerCase());
+                type = DatabaseType.valueOf(args[0].toUpperCase());
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
             reloadConfig();
