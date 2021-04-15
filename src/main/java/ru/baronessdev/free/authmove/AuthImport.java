@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.baronessdev.paid.auth.api.AuthDataManagerAPI;
 import ru.baronessdev.paid.auth.api.BaronessAuthAPI;
-import ru.baronessdev.paid.auth.commands.AdminCommand;
+import ru.baronessdev.paid.auth.api.subcommands.AuthSubcommandBuilder;
 import ru.baronessdev.paid.auth.pojo.PlayerProfile;
 
 import java.io.File;
@@ -20,31 +20,13 @@ public final class AuthImport extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        BaronessAuthAPI.getSubcommandManager().addSubcommand(new AdminCommand.AuthSubcommand("move", "[mysql/sqlite] - переезд на новую версию", ((sender, args) -> {
-            DatabaseType type;
-            try {
-                type = DatabaseType.valueOf(args[0].toUpperCase());
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-            reloadConfig();
 
-            switch (type) {
-                case SQLITE: {
-                    processSQLite(sender);
-                    return true;
-                }
-                case MYSQL: {
-                    processMySQL(sender);
-                    return true;
-                }
-            }
-            return true;
-        })));
+        BaronessAuthAPI.getSubcommandManager().addSubcommand(new AuthSubcommandBuilder("move", new Command(this))
+                .setDescription("[mysql/sqlite] - переезд на новую версию")
+                .build());
     }
 
-    private void processSQLite(CommandSender s) {
+    protected void processSQLite(CommandSender s) {
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite://" + getDataFolder().getAbsolutePath() + File.separator + "sqlite.db");
             importData(s, connection);
@@ -53,7 +35,7 @@ public final class AuthImport extends JavaPlugin {
         }
     }
 
-    private void processMySQL(CommandSender s) {
+    protected void processMySQL(CommandSender s) {
         try {
             Connection connection = DriverManager.getConnection(
                     getConfig().getString("url"),
