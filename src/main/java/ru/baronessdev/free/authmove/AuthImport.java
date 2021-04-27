@@ -28,7 +28,7 @@ public final class AuthImport extends JavaPlugin {
 
     protected void processSQLite(CommandSender s) {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite://" + getDataFolder().getAbsolutePath() + File.separator + "old.db");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite://" + getDataFolder().getAbsolutePath() + File.separator + "sqlite.db");
             importData(s, connection);
         } catch (SQLException e) {
             s.sendMessage("Не удалось подключиться к SQLite: " + e.getMessage());
@@ -61,7 +61,7 @@ public final class AuthImport extends JavaPlugin {
                 dataManager.saveProfile(new PlayerProfile(
                         nick,
                         nick.toLowerCase(),
-                        (password.contains("$")) ? password : "$MD5$$" + password + "$",
+                        (password.contains("$")) ? password + "$": "$MD5$$" + password + "$",
                         ip,
                         ip,
                         Long.parseLong(resultSet.getString("registrationDate")),
