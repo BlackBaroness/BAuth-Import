@@ -17,7 +17,6 @@ public class Command implements AuthSubcommandExecutor {
         try {
             type = AuthImport.DatabaseType.valueOf(args[0].toUpperCase());
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
         plugin.reloadConfig();
