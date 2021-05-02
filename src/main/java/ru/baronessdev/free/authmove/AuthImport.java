@@ -1,5 +1,6 @@
 package ru.baronessdev.free.authmove;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,46 +9,27 @@ import ru.baronessdev.paid.auth.api.BaronessAuthAPI;
 import ru.baronessdev.paid.auth.api.subcommands.AuthSubcommandBuilder;
 import ru.baronessdev.paid.auth.pojo.PlayerProfile;
 
-import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.UUID;
 
+/**
+ * AuthImport addon for BaronessAuth
+ * @author BlackBaroness
+ */
 public final class AuthImport extends JavaPlugin {
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
+        BaronessAuthAPI.getPaperCommandManager().getCommandCompletions().registerAsyncCompletion("moveTips", c -> ImmutableList.of("sqlite", "mysql"));
         BaronessAuthAPI.getSubcommandManager().addSubcommand(new AuthSubcommandBuilder("move", new Command(this))
                 .setDescription("[mysql/sqlite] - переезд на новую версию")
                 .build());
     }
 
-    protected void processSQLite(CommandSender s) {
-        try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite://" + getDataFolder().getAbsolutePath() + File.separator + "sqlite.db");
-            importData(s, connection);
-        } catch (SQLException e) {
-            s.sendMessage("Не удалось подключиться к SQLite: " + e.getMessage());
-        }
-    }
-
-    protected void processMySQL(CommandSender s) {
-        try {
-            Connection connection = DriverManager.getConnection(
-                    getConfig().getString("url"),
-                    getConfig().getString("user"),
-                    getConfig().getString("password"));
-            importData(s, connection);
-        } catch (SQLException e) {
-            s.sendMessage("Не удалось подключиться к MySQL: " + e.getMessage());
-        }
-    }
-
-    private void importData(CommandSender s, Connection connection) {
+    public void importData(CommandSender s, Connection connection) {
         try {
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM " + getConfig().getString("table"));
 
@@ -78,10 +60,5 @@ public final class AuthImport extends JavaPlugin {
         } catch (Exception e) {
             s.sendMessage(ChatColor.YELLOW + "Произошла ошибка при импортировании: " + e.getMessage());
         }
-    }
-
-    enum DatabaseType {
-        MYSQL,
-        SQLITE
     }
 }
