@@ -1,34 +1,9 @@
-Этот небольшой аддон позволяет перенести данные для перехода на новую версию BaronessAuth. Используется BaronessAuth API
+![LastCommit](https://img.shields.io/github/last-commit/BlackBaroness/BAuth-Import?color=8b00ff)
+![LinesOfCode](https://img.shields.io/tokei/lines/github/BlackBaroness/BAuth-Import?color=8b00ff)
 
-К каждому релизу указываются версии, с которой и на которую он переносит
+https://market.baronessdev.ru/shop/import.6/
 
-    Для SQLite: положите файл sqlite.db в папку AuthImport, укажите имя таблицы в config.yml
-    Для MySQL: укажите данные от вашей базы данных в config.yml
-
-Для вызова импорта используется команда /auth import **source**, где **source** - тип базы данных, с которого вы переезжаете
-
-Цель импорта указывать не нужно, данные автоматически импортируются в вашу текущую базу данных
-
-Вы сможете следить за процессом импорта
-
-# Особые требования к переезду
-### С 1хх на 2хх
-Добавьте следующие строки в BaronessAuth/doNotTouch/hashBackup.auth:
-
-    SHA:
-        - SHA256
-        - SALT
-        - SHA256
-
-    BaronessAuth:
-        - MD5
-        - SALT
-        - SHA256
-
-    MD5:
-        - MD5
-
-Это нужно для работы паролей старого образца
+![FoodPlus stats](https://bstats.org/signatures/bukkit/BAuth-Import.svg)
 
 # Сборка
 1. Изменить путь к артефакту ```ru.baronessdev.paid.auth:BaronessAuth``` в ```pom.xml``` на свой, указав файл BaronessAuth последней версии;
