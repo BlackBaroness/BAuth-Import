@@ -1,7 +1,7 @@
 ![LastCommit](https://img.shields.io/github/last-commit/BlackBaroness/BAuth-Import?color=8b00ff)
 ![LinesOfCode](https://img.shields.io/tokei/lines/github/BlackBaroness/BAuth-Import?color=8b00ff)
 
-https://market.baronessdev.ru/shop/import.6/
+Download for free: https://market.baronessdev.ru/shop/import.6/
 
 ![FoodPlus stats](https://bstats.org/signatures/bukkit/BAuth-Import.svg)
 
