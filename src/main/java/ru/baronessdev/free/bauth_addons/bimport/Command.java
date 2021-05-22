@@ -1,4 +1,4 @@
-package ru.baronessdev.free.authmove;
+package ru.baronessdev.free.bauth_addons.bimport;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,9 +16,9 @@ import java.sql.SQLException;
 @Subcommand("move")
 public class Command extends AuthSubcommandExecutor {
 
-    private final AuthImport plugin;
+    private final Import plugin;
 
-    public Command(AuthImport plugin) {
+    public Command(Import plugin) {
         this.plugin = plugin;
     }
 

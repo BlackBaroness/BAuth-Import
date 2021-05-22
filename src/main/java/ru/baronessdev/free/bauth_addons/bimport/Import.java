@@ -1,9 +1,13 @@
-package ru.baronessdev.free.authmove;
+package ru.baronessdev.free.bauth_addons.bimport;
 
 import com.google.common.collect.ImmutableList;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.baronessdev.free.bauth_addons.bimport.util.UpdateCheckerUtil;
+import ru.baronessdev.free.bauth_addons.bimport.util.logging.LogType;
+import ru.baronessdev.free.bauth_addons.bimport.util.logging.Logger;
 import ru.baronessdev.paid.auth.api.AuthDataManagerAPI;
 import ru.baronessdev.paid.auth.api.BaronessAuthAPI;
 import ru.baronessdev.paid.auth.api.subcommands.AuthSubcommandBuilder;
@@ -13,11 +17,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.UUID;
 
-/**
- * AuthImport addon for BaronessAuth
- * @author BlackBaroness
- */
-public final class AuthImport extends JavaPlugin {
+public final class Import extends JavaPlugin {
 
     @Override
     public void onEnable() {
@@ -27,6 +27,9 @@ public final class AuthImport extends JavaPlugin {
         BaronessAuthAPI.getSubcommandManager().addSubcommand(new AuthSubcommandBuilder("move", new Command(this))
                 .setDescription("[mysql/sqlite] - переезд на новую версию")
                 .build());
+
+        new Metrics(this,11438);
+        checkUpdates();
     }
 
     public void importData(CommandSender s, Connection connection) {
@@ -59,6 +62,19 @@ public final class AuthImport extends JavaPlugin {
             connection.close();
         } catch (Exception e) {
             s.sendMessage(ChatColor.YELLOW + "Произошла ошибка при импортировании: " + e.getMessage());
+        }
+    }
+
+    private void checkUpdates() {
+        try {
+            int i = UpdateCheckerUtil.check(this);
+            if (i != -1) {
+                Logger.log(LogType.INFO, "New version found: v" + ChatColor.YELLOW + i + ChatColor.GRAY + " (Current: v" + getDescription().getVersion() + ")");
+                Logger.log(LogType.INFO, "Update now: " + ChatColor.AQUA + "market.baronessdev.ru/shop/licenses/");
+            }
+        } catch (UpdateCheckerUtil.UpdateCheckException e) {
+            Logger.log(LogType.ERROR, "Could not check for updates: " + e.getRootCause());
+            Logger.log(LogType.ERROR, "Please contact Baroness's Dev if this isn't your mistake.");
         }
     }
 }

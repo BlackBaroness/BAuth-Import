@@ -1,7 +1,6 @@
-name: AuthImport
+name: BAuth-Import
 version: ${project.version}
-main: ru.baronessdev.free.authmove.AuthImport
+main: ru.baronessdev.free.bauth_addons.bimport.Import
 depend: [ BaronessAuth ]
 authors: [ Black_Baroness ]
-description: Небольшой плагин, который позволяет перенестись на более новую версию BaronessAuth. Текущие версии переноса есть на гитхабе
-website: baronessdev.ru
+website: https://market.baronessdev.ru/shop/import.6/
