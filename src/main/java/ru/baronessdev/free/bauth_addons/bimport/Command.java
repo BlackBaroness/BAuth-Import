@@ -3,8 +3,8 @@ package ru.baronessdev.free.bauth_addons.bimport;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import ru.baronessdev.paid.auth.acf.annotation.*;
 import ru.baronessdev.paid.auth.api.subcommands.AuthSubcommandExecutor;
+import ru.baronessdev.paid.auth.lib.acf.core.annotation.*;
 
 import java.io.File;
 import java.sql.Connection;
