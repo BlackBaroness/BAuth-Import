@@ -1,6 +1,5 @@
 package ru.baronessdev.free.bauth_addons.bimport;
 
-import com.google.common.collect.ImmutableList;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -10,8 +9,8 @@ import ru.baronessdev.free.bauth_addons.bimport.util.logging.LogType;
 import ru.baronessdev.free.bauth_addons.bimport.util.logging.Logger;
 import ru.baronessdev.paid.auth.api.AuthDataManagerAPI;
 import ru.baronessdev.paid.auth.api.BaronessAuthAPI;
+import ru.baronessdev.paid.auth.api.pojo.PlayerProfile;
 import ru.baronessdev.paid.auth.api.subcommands.AuthSubcommandBuilder;
-import ru.baronessdev.paid.auth.pojo.PlayerProfile;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -23,12 +22,11 @@ public final class Import extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
-        BaronessAuthAPI.getPaperCommandManager().getCommandCompletions().registerAsyncCompletion("moveTips", c -> ImmutableList.of("sqlite", "mysql"));
         BaronessAuthAPI.getSubcommandManager().addSubcommand(new AuthSubcommandBuilder("move", new Command(this))
                 .setDescription("[mysql/sqlite] - переезд на новую версию")
                 .build());
 
-        new Metrics(this,11438);
+        new Metrics(this, 11438);
         checkUpdates();
     }
 
@@ -46,7 +44,7 @@ public final class Import extends JavaPlugin {
                 dataManager.saveProfile(new PlayerProfile(
                         nick,
                         nick.toLowerCase(),
-                        (password.contains("$")) ? password + "$": "$MD5$$" + password + "$",
+                        (password.contains("$")) ? password + "$" : "$MD5$$" + password + "$",
                         ip,
                         ip,
                         Long.parseLong(resultSet.getString("registrationDate")),
@@ -66,15 +64,17 @@ public final class Import extends JavaPlugin {
     }
 
     private void checkUpdates() {
-        try {
-            int i = UpdateCheckerUtil.check(this);
-            if (i != -1) {
-                Logger.log(LogType.INFO, "New version found: v" + ChatColor.YELLOW + i + ChatColor.GRAY + " (Current: v" + getDescription().getVersion() + ")");
-                Logger.log(LogType.INFO, "Update now: " + ChatColor.AQUA + "market.baronessdev.ru/shop/licenses/");
+        new Thread(() -> {
+            try {
+                int i = UpdateCheckerUtil.check(this);
+                if (i != -1) {
+                    Logger.log(LogType.INFO, "New version found: v" + ChatColor.YELLOW + i + ChatColor.GRAY + " (Current: v" + getDescription().getVersion() + ")");
+                    Logger.log(LogType.INFO, "Update now: " + ChatColor.AQUA + "market.baronessdev.ru/shop/licenses/");
+                }
+            } catch (UpdateCheckerUtil.UpdateCheckException e) {
+                Logger.log(LogType.ERROR, "Could not check for updates: " + e.getRootCause());
+                Logger.log(LogType.ERROR, "Please contact Baroness's Dev if this isn't your mistake.");
             }
-        } catch (UpdateCheckerUtil.UpdateCheckException e) {
-            Logger.log(LogType.ERROR, "Could not check for updates: " + e.getRootCause());
-            Logger.log(LogType.ERROR, "Please contact Baroness's Dev if this isn't your mistake.");
-        }
+        }).start();
     }
 }
